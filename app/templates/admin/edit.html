@@ -1,0 +1,50 @@
+{% extends "admin/layout_admin.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">予約編集</h2>
+
+<div class="card p-4 shadow-sm">
+
+    <form method="POST" action="{{ url_for('admin.edit_reservation', resv_id=r.id) }}">
+
+        <div class="mb-3">
+            <label class="form-label">お名前</label>
+            <input type="text" name="customer_name"
+                   value="{{ r.customer_name }}"
+                   class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">電話番号</label>
+            <input type="text" name="phone"
+                   value="{{ r.phone }}"
+                   class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">メニュー（所要時間）</label>
+            <select name="duration" class="form-select">
+                <option value="60"  {% if r.duration==60 %}selected{% endif %}>60 分</option>
+                <option value="90"  {% if r.duration==90 %}selected{% endif %}>90 分</option>
+                <option value="120" {% if r.duration==120 %}selected{% endif %}>120 分</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">開始時間</label>
+            <input type="datetime-local"
+                   name="start_at"
+                   value="{{ r.start_at.strftime('%Y-%m-%dT%H:%M') }}"
+                   class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">更新する</button>
+
+    </form>
+
+</div>
+
+<a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary mt-3">戻る</a>
+
+{% endblock %}

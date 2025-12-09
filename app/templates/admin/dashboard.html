@@ -1,0 +1,32 @@
+{% extends "admin/layout_admin.html" %}
+
+{% block title %}予約管理{% endblock %}
+
+{% block content %}
+<h1>予約一覧</h1>
+
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>ID</th>
+        <th>お名前</th>
+        <th>電話番号</th>
+        <th>開始</th>
+        <th>終了</th>
+        <th>操作</th>
+    </tr>
+    {% for r in reservations %}
+    <tr class="table-secondary">
+        <td>{{ r.id }}</td>
+        <td>{{ r.customer_name }}</td>
+        <td>{{ r.phone }}</td>
+        <td>{{ r.start_at }}</td>
+        <td>{{ r.end_at }}</td>
+        <td>
+            <a class="btn btn-sm btn-primary" href="{{ url_for('admin.edit_reservation', resv_id=r.id) }}">編集</a> |
+            <a class="btn btn-sm btn-danger" href="{{ url_for('admin.delete_reservation', resv_id=r.id) }}"
+               onclick="return confirm('削除しますか？');">削除</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

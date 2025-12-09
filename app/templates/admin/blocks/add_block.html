@@ -1,0 +1,30 @@
+{% extends "admin/layout_admin.html" %}
+
+{% block content %}
+<h2 class="mb-4">ブロック追加</h2>
+
+<div class="card p-4 shadow-sm">
+
+    <form method="POST">
+
+        <div class="mb-3">
+            <label class="form-label">開始日時</label>
+            <input type="datetime-local" name="start_at" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">終了日時</label>
+            <input type="datetime-local" name="end_at" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">理由（任意）</label>
+            <input type="text" name="reason" class="form-control">
+        </div>
+
+        <button class="btn btn-primary w-100">登録する</button>
+    </form>
+</div>
+
+<a href="{{ url_for('blocks.list_blocks') }}" class="btn btn-secondary mt-3">戻る</a>
+{% endblock %}

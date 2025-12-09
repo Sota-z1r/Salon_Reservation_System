@@ -1,0 +1,29 @@
+{% extends "admin/layout_admin.html" %}
+
+{% block content %}
+<h2>ブロック一覧</h2>
+
+<a href="{{ url_for('blocks.add_block') }}" class="btn btn-success mb-3">新規ブロック</a>
+
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>ID</th>
+        <th>開始</th>
+        <th>終了</th>
+        <th>理由</th>
+        <th>操作</th>
+    </tr>
+    {% for b in blocks %}
+    <tr class="table-secondary">
+        <td>{{ b.id }}</td>
+        <td>{{ b.start_at }}</td>
+        <td>{{ b.end_at }}</td>
+        <td>{{ b.reason or "（なし）" }}</td>
+        <td>
+            <a class="btn btn-sm btn-primary" href="{{ url_for('blocks.edit_block', block_id=b.id) }}">編集</a>
+            <a class="btn btn-sm btn-danger" href="{{ url_for('blocks.delete_block', block_id=b.id) }}">削除</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

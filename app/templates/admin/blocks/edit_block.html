@@ -1,0 +1,36 @@
+{% extends "admin/layout_admin.html" %}
+
+{% block content %}
+<h2 class="mb-4">ブロック編集</h2>
+
+<div class="card p-4 shadow-sm">
+
+    <form method="POST">
+
+        <div class="mb-3">
+            <label class="form-label">開始日時</label>
+            <input type="datetime-local" name="start_at"
+                   value="{{ b.start_at.strftime('%Y-%m-%dT%H:%M') }}"
+                   class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">終了日時</label>
+            <input type="datetime-local" name="end_at"
+                   value="{{ b.end_at.strftime('%Y-%m-%dT%H:%M') }}"
+                   class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">理由（任意）</label>
+            <input type="text" name="reason" value="{{ b.reason }}"
+                   class="form-control">
+        </div>
+
+        <button class="btn btn-primary w-100">更新する</button>
+    </form>
+
+</div>
+
+<a href="{{ url_for('blocks.list_blocks') }}" class="btn btn-secondary mt-3">戻る</a>
+{% endblock %}

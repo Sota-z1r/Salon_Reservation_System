@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2 class="mb-4">予約フォーム</h2>
+
+<form method="POST" action="{{ url_for('reservation.reserve') }}" class="card p-4 shadow-sm">
+
+    <!-- LINE からのアクセスかどうか -->
+    <input type="hidden" name="from_line" id="from_line" value="0">
+
+    <div class="mb-3">
+        <label class="form-label">お名前</label>
+        <input type="text" name="customer_name" id="customer_name"
+               class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">電話番号</label>
+        <input type="text" name="phone" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">メニュー（時間）</label>
+        <select name="duration" class="form-select">
+            <option value="60">60分</option>
+            <option value="90">90分</option>
+            <option value="120">120分</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">開始時間</label>
+        <input type="datetime-local" name="start_at"
+               class="form-control" required>
+    </div>
+
+    <button class="btn btn-primary w-100">予約する</button>
+</form>
+<!-- LIFF JavaScript 読み込み -->
+<script src="{{ url_for('static', filename='js/liff.js') }}"></script>
+
+{% endblock %}
