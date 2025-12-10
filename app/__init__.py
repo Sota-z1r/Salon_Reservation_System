@@ -9,6 +9,9 @@ migrate = Migrate()
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)   # ← これに変更
+    import os
+    print("DEBUG_SECRET:", os.getenv("LINE_CHANNEL_SECRET"))
+    print("DEBUG_SECRET:", os.getenv("LINE_CHANNEL_ACCESS_TOKEN"))
 
     db.init_app(app)
     migrate.init_app(app, db)
