@@ -17,9 +17,11 @@ def create_app():
     from app.routes.reservation import reservation_bp
     from app.routes.admin import admin_bp
     from app.routes.blocks import blocks_bp
+    from app.routes.line_webhook import line_bp
 
     app.register_blueprint(reservation_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(blocks_bp)
+    app.register_blueprint(line_bp)
 
     return app
