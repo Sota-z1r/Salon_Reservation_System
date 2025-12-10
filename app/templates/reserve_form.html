@@ -6,7 +6,7 @@
 <form method="POST" action="{{ url_for('reservation.reserve') }}" class="card p-4 shadow-sm">
 
     <!-- LINE からのアクセスかどうか -->
-    <input type="hidden" name="from_line" id="from_line" value="0">
+    <input type="hidden" id="line_user_id" name="line_user_id">
 
     <div class="mb-3">
         <label class="form-label">お名前</label>

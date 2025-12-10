@@ -7,10 +7,13 @@ from datetime import timedelta, datetime
 reservation_bp = Blueprint("reservation", __name__)
 
 
-@reservation_bp.route("/reserve", methods=["GET", "POST"])
+@reservation_bp.route("/reserve", methods=["GET", "POST", "HEAD"])
 def reserve():
     if request.method == "GET":
         return render_template("reserve_form.html")
+    
+    if request.method == "HEAD":
+        return "", 200
 
     # POST
     name = request.form.get("customer_name")
@@ -68,6 +71,21 @@ def reserve():
 
     db.session.add(new_resv)
     db.session.commit()
+    
+    
+    # --- LINE プッシュ通知 ---
+    from app.services.line_api import push_message
+
+    if line_user_id:
+        try:
+            push_message(
+                line_user_id,
+                f"予約が完了しました！\n\n"
+                f"日時: {start_dt.strftime('%Y-%m-%d %H:%M')}\n"
+                f"施術時間: {duration}分"
+            )
+        except Exception as e:
+            print("LINE プッシュ通知エラー:", e)
 
     # ==================================================
     # 📅 Google Calendar へ登録
