@@ -72,7 +72,8 @@ def reserve():
     db.session.add(new_resv)
     db.session.commit()
     
-    
+    print("DEBUG: line_user_id =", line_user_id)
+
     # --- LINE プッシュ通知 ---
     from app.services.line_api import push_message
 
