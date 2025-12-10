@@ -21,10 +21,13 @@ def create_app():
     from app.routes.admin import admin_bp
     from app.routes.blocks import blocks_bp
     from app.routes.line_webhook import line_bp
+    from app.routes.remind import remind_bp
 
     app.register_blueprint(reservation_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(blocks_bp)
     app.register_blueprint(line_bp)
+    app.register_blueprint(remind_bp)
+
 
     return app

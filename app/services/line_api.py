@@ -17,11 +17,23 @@ def reply_message(reply_token, text):
         "messages": [{"type": "text", "text": text}]
     }
     r = requests.post(LINE_REPLY_API, headers=_headers(), json=body)
+    print("LINE reply response:", r.status_code, r.text)
     r.raise_for_status()
     return r
+
 
 def push_message(to, text):
     body = {"to": to, "messages":[{"type":"text","text": text}]}
     r = requests.post(LINE_PUSH_API, headers=_headers(), json=body)
+    print("LINE push response:", r.status_code, r.text)
+    r.raise_for_status()
+    return r
+
+def send_message(to, messages):
+    """複数メッセージやFlexに対応した送信用"""
+    body = {"to": to, "messages": messages}
+
+    r = requests.post(LINE_PUSH_API, headers=_headers(), json=body)
+    print("LINE generic push:", r.status_code, r.text)
     r.raise_for_status()
     return r
