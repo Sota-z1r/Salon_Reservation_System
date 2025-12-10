@@ -1,5 +1,5 @@
 // liff.js
-const LIFF_ID = "あなたのLIFF IDをここへ";
+const LIFF_ID = "2008660278-Ap3kLvYJ";
 
 window.onload = async function () {
     try {
