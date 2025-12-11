@@ -25,6 +25,11 @@ def create_app():
     app.register_blueprint(blocks_bp)
     app.register_blueprint(line_bp)
     app.register_blueprint(remind_bp)
+    
+    
+    # 初回起動時に DB を作成（存在しない場合）
+    with app.app_context():
+        db.create_all()
 
 
     return app
