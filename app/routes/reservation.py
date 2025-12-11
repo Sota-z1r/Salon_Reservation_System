@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, flash, url_for
+from flask import Blueprint, render_template, request, redirect, flash, url_for, jsonify
 from app import db
 from app.models.reservation import Reservation
 from app.models.block import Block
@@ -104,3 +104,96 @@ def reserve():
         print("Google カレンダー登録エラー:", e)
 
     return render_template("complete_reservation.html")
+
+
+# ===========================================================
+# 📌 時刻リスト（10分刻み）と予約 / ブロックの無効リストを返す API
+# ===========================================================
+@reservation_bp.route("/api/time-slots")
+def api_time_slots():
+    date_str = request.args.get("date")
+    duration = request.args.get("duration", type=int)
+
+    if not date_str:
+        return jsonify({"error": "date required"}), 400
+
+    if not duration:
+        duration = 60  # デフォルト60分（フォームがあるので基本入る）
+
+    selected_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+
+    # 営業時間 9:00〜22:00
+    t = datetime.combine(selected_date, datetime.strptime("09:00", "%H:%M").time())
+    end = datetime.combine(selected_date, datetime.strptime("22:00", "%H:%M").time())
+
+    # 10分刻みの全候補
+    time_slots = []
+    while t <= end:
+        time_slots.append(t.strftime("%H:%M"))
+        t += timedelta(minutes=10)
+
+    # -----------------------------
+    # 予約とブロックを取得
+    # -----------------------------
+    reservations = Reservation.query.filter(
+        db.func.date(Reservation.start_at) == selected_date
+    ).all()
+
+    blocks = Block.query.filter(
+        db.func.date(Block.start_at) == selected_date
+    ).all()
+
+    disabled = set()
+
+    # -----------------------------
+    # 予約：開始時間＋duration に基づき後続枠も全部無効化
+    # -----------------------------
+    for r in reservations:
+        cur = r.start_at
+        end_dt = r.end_at  # end_at は duration + 30分 で計算済み
+        while cur < end_dt:
+            disabled.add(cur.strftime("%H:%M"))
+            cur += timedelta(minutes=10)
+
+    # -----------------------------
+    # ブロックも同様に全枠を無効化
+    # -----------------------------
+    for b in blocks:
+        cur = b.start_at
+        end_dt = b.end_at
+        while cur < end_dt:
+            disabled.add(cur.strftime("%H:%M"))
+            cur += timedelta(minutes=10)
+
+    # -----------------------------
+    # 当日なら過ぎた時間も無効
+    # -----------------------------
+    now = datetime.now()
+    if selected_date == now.date():
+        for ts in time_slots:
+            slot_dt = datetime.strptime(f"{date_str} {ts}", "%Y-%m-%d %H:%M")
+            if slot_dt <= now:
+                disabled.add(ts)
+
+    # -----------------------------
+    # この日の基準で「予約 duration の連続枠が取れない開始時刻」も無効化
+    # -----------------------------
+    for ts in time_slots:
+        start_dt = datetime.strptime(f"{date_str} {ts}", "%Y-%m-%d %H:%M")
+        end_dt = start_dt + timedelta(minutes=duration + 30)
+
+        cur = start_dt
+        invalid = False
+        while cur < end_dt:
+            if cur.strftime("%H:%M") in disabled:
+                invalid = True
+                break
+            cur += timedelta(minutes=10)
+
+        if invalid:
+            disabled.add(ts)
+
+    return jsonify({
+        "time_slots": time_slots,
+        "disabled": list(disabled)
+    })

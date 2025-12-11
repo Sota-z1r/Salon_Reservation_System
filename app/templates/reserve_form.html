@@ -56,4 +56,35 @@
 <!-- LIFF JavaScript 読み込み -->
 <script src="{{ url_for('static', filename='js/liff.js') }}"></script>
 
+<script>
+async function loadTimes() {
+    const date = document.getElementById("date").value;
+    const duration = document.getElementById("duration").value;
+
+    if (!date) return;
+
+    const res = await fetch(`/api/time-slots?date=${date}&duration=${duration}`);
+    const data = await res.json();
+
+    const sel = document.getElementById("time");
+    sel.innerHTML = "";
+
+    data.time_slots.forEach(ts => {
+        let opt = document.createElement("option");
+        opt.value = ts;
+        opt.textContent = ts;
+
+        if (data.disabled.includes(ts)) {
+            opt.disabled = true;
+            opt.style.color = "#aaa";  // ←グレーアウト
+        }
+
+        sel.appendChild(opt);
+    });
+}
+
+document.getElementById("date").addEventListener("change", loadTimes);
+document.getElementById("duration").addEventListener("change", loadTimes);
+</script>
+
 {% endblock %}
