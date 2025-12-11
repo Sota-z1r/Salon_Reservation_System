@@ -35,11 +35,18 @@
 
     <div class="mb-3">
         <label class="form-label">開始時間（10分単位）</label>
-        <input type="time" name="time"
-            class="form-control"
-            step="600"
-            required>
+        <select name="time" class="form-select" required>
+            {% for h in range(9, 22) %}  {# 9:00〜21:59 #}
+                {% for m in [0, 10, 20, 30, 40, 50] %}
+                    <option value="{{ '%02d:%02d' % (h, m) }}">
+                        {{ '%02d:%02d' % (h, m) }}
+                    </option>
+                {% endfor %}
+            {% endfor %}
+            <option value="22:00">22:00</option>  {# 営業終了時間ジャスト #}
+        </select>
     </div>
+
 
 
     <button class="btn btn-primary w-100">予約する</button>
