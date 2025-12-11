@@ -11,14 +11,14 @@
             <label class="form-label">開始日時</label>
             <input type="datetime-local" name="start_at"
                    value="{{ b.start_at.strftime('%Y-%m-%dT%H:%M') }}"
-                   class="form-control" required>
+                   class="form-control" step="600" required>
         </div>
 
         <div class="mb-3">
             <label class="form-label">終了日時</label>
             <input type="datetime-local" name="end_at"
                    value="{{ b.end_at.strftime('%Y-%m-%dT%H:%M') }}"
-                   class="form-control" required>
+                   class="form-control" step="600" required>
         </div>
 
         <div class="mb-3">
