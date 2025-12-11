@@ -19,7 +19,11 @@ def reserve():
     name = request.form.get("customer_name")
     phone = request.form.get("phone")
     duration = int(request.form.get("duration"))
-    start_at = request.form.get("start_at")
+    date_str = request.form["date"]
+    time_str = request.form["time"]
+
+    start_at = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+    # start_at = request.form.get("start_at")
     
     # LIFF から入ってくる LINE ユーザーID（Web経由なら空）
     line_user_id = request.form.get("line_user_id")
