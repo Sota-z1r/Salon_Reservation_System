@@ -8,3 +8,4 @@ google-auth
 google-auth-oauthlib
 gunicorn
 flask_migrate
+psycopg2-binary
