@@ -29,7 +29,7 @@ def reserve():
     line_user_id = request.form.get("line_user_id")
 
     # 文字列 → datetime
-    start_dt = datetime.fromisoformat(start_at)
+    start_dt = start_at
 
     # 予約終了時刻（施術 + 片付け）
     end_dt = start_dt + timedelta(minutes=duration + 30)
