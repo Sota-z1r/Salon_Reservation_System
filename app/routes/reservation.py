@@ -3,8 +3,10 @@ from app import db
 from app.models.reservation import Reservation
 from app.models.block import Block
 from datetime import timedelta, datetime
+from zoneinfo import ZoneInfo
 
 reservation_bp = Blueprint("reservation", __name__)
+# 先頭に追加（モジュールレベルで import しておくのが良い）
 
 
 @reservation_bp.route("/reserve", methods=["GET", "POST", "HEAD"])
@@ -168,7 +170,7 @@ def api_time_slots():
     # -----------------------------
     # 当日なら過ぎた時間も無効
     # -----------------------------
-    now = datetime.now()
+    now = datetime.now(ZoneInfo("Asia/Tokyo"))
     if selected_date == now.date():
         for ts in time_slots:
             slot_dt = datetime.strptime(f"{date_str} {ts}", "%Y-%m-%d %H:%M")
@@ -178,20 +180,20 @@ def api_time_slots():
     # -----------------------------
     # この日の基準で「予約 duration の連続枠が取れない開始時刻」も無効化
     # -----------------------------
-    # for ts in time_slots:
-    #     start_dt = datetime.strptime(f"{date_str} {ts}", "%Y-%m-%d %H:%M")
-    #     end_dt = start_dt + timedelta(minutes=duration + 30)
+    for ts in time_slots:
+        start_dt = datetime.strptime(f"{date_str} {ts}", "%Y-%m-%d %H:%M")
+        end_dt = start_dt + timedelta(minutes=duration + 30)
 
-    #     cur = start_dt
-    #     invalid = False
-    #     while cur < end_dt:
-    #         if cur.strftime("%H:%M") in disabled:
-    #             invalid = True
-    #             break
-    #         cur += timedelta(minutes=10)
+        cur = start_dt
+        invalid = False
+        while cur < end_dt:
+            if cur.strftime("%H:%M") in disabled:
+                invalid = True
+                break
+            cur += timedelta(minutes=10)
 
-    #     if invalid:
-    #         disabled.add(ts)
+        if invalid:
+            disabled.add(ts)
 
     return jsonify({
         "time_slots": time_slots,
