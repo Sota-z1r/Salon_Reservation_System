@@ -74,15 +74,15 @@ async function loadTimes() {
         opt.value = ts;
         opt.textContent = ts;
 
+        // 無効化
         if (data.disabled.includes(ts)) {
             opt.disabled = true;
-            opt.style.color = "#aaa";  // ←グレーアウト
+            opt.classList.add("disabled-option");
         }
 
         sel.appendChild(opt);
     });
 }
-
 document.getElementById("date").addEventListener("change", loadTimes);
 document.getElementById("duration").addEventListener("change", loadTimes);
 </script>
