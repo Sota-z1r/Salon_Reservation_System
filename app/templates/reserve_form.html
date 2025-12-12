@@ -21,7 +21,7 @@
 
     <div class="mb-3">
         <label class="form-label">メニュー（時間）</label>
-        <select name="duration" class="form-select">
+        <select name="duration" id="duration" class="form-select">
             <option value="60">60分</option>
             <option value="90">90分</option>
             <option value="120">120分</option>
@@ -30,22 +30,23 @@
 
     <div class="mb-3">
         <label class="form-label">予約日</label>
-        <input type="date" name="date" class="form-control" required>
+        <input type="date" name="date" id="date" class="form-control" required>
     </div>
 
     <div class="mb-3">
         <label class="form-label">開始時間（10分単位）</label>
-        <select name="time" class="form-select" required>
-            {% for h in range(9, 22) %}  {# 9:00〜21:59 #}
+        <select name="time" id="time" class="form-select" required>
+            {% for h in range(9, 22) %}
                 {% for m in [0, 10, 20, 30, 40, 50] %}
                     <option value="{{ '%02d:%02d' % (h, m) }}">
                         {{ '%02d:%02d' % (h, m) }}
                     </option>
                 {% endfor %}
             {% endfor %}
-            <option value="22:00">22:00</option>  {# 営業終了時間ジャスト #}
+            <option value="22:00">22:00</option>
         </select>
     </div>
+
 
 
 
