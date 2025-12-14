@@ -173,7 +173,10 @@ def api_time_slots():
     now = datetime.now(ZoneInfo("Asia/Tokyo"))
     if selected_date == now.date():
         for ts in time_slots:
+            # スロットの日時をタイムゾーン付きで作る
             slot_dt = datetime.strptime(f"{date_str} {ts}", "%Y-%m-%d %H:%M")
+            slot_dt = slot_dt.replace(tzinfo=ZoneInfo("Asia/Tokyo"))
+
             if slot_dt <= now:
                 disabled.add(ts)
 
