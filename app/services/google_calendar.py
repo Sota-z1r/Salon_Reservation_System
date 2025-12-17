@@ -35,9 +35,9 @@ def get_service():
 def create_event(resv):
     """予約を Google カレンダーへ登録"""
     service = get_service()
-
+    menu_label = "パーソナルトレーニング" if resv.menu == "training" else "マッサージ"
     event = {
-        "summary": f"{resv.customer_name} 様 予約",
+        "summary": f"{resv.customer_name} 様 {menu_label}予約",
         "description": f"電話番号: {resv.phone}",
         "start": {"dateTime": resv.start_at.isoformat(), "timeZone": "Asia/Tokyo"},
         "end": {"dateTime": resv.end_at.isoformat(), "timeZone": "Asia/Tokyo"},

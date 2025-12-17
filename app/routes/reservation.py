@@ -20,6 +20,7 @@ def reserve():
     # POST
     name = request.form.get("customer_name")
     phone = request.form.get("phone")
+    menu = request.form.get("menu")
     duration = int(request.form.get("duration"))
     date_str = request.form["date"]
     time_str = request.form["time"]
@@ -69,6 +70,7 @@ def reserve():
     new_resv = Reservation(
         customer_name=name,
         phone=phone,
+        menu=menu,
         start_at=start_dt,
         end_at=end_dt,
         duration=duration,
@@ -85,12 +87,16 @@ def reserve():
 
     if line_user_id:
         try:
+            menu_label = "パーソナルトレーニング" if menu == "training" else "マッサージ"
+
             push_message(
                 line_user_id,
                 f"予約が完了しました！\n\n"
+                f"メニュー: {menu_label}\n"
                 f"日時: {start_dt.strftime('%Y-%m-%d %H:%M')}\n"
                 f"施術時間: {duration}分"
             )
+
         except Exception as e:
             print("LINE プッシュ通知エラー:", e)
 

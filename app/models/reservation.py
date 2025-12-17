@@ -9,6 +9,7 @@ class Reservation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     customer_name = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(20), nullable=False)
+    menu = db.Column(db.String(20), nullable=False)
     start_at = db.Column(db.DateTime, nullable=False)
     end_at = db.Column(db.DateTime, nullable=False)
     duration = db.Column(db.Integer, nullable=False)

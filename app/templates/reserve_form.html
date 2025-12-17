@@ -20,13 +20,20 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">メニュー（時間）</label>
-        <select name="duration" id="duration" class="form-select">
-            <option value="60">60分</option>
-            <option value="90">90分</option>
-            <option value="120">120分</option>
+        <label class="form-label">メニュー</label>
+        <select name="menu" id="menu" class="form-select" required>
+            <option value="training">パーソナルトレーニング</option>
+            <option value="massage">マッサージ</option>
         </select>
     </div>
+
+    <div class="mb-3">
+        <label class="form-label">時間</label>
+        <select name="duration" id="duration" class="form-select" required>
+            <!-- JSで切り替える -->
+        </select>
+    </div>
+
 
     <div class="mb-3">
         <label class="form-label">予約日</label>
@@ -86,6 +93,32 @@ async function loadTimes() {
 }
 document.getElementById("date").addEventListener("change", loadTimes);
 document.getElementById("duration").addEventListener("change", loadTimes);
+
+const menuSelect = document.getElementById("menu");
+const durationSelect = document.getElementById("duration");
+
+function updateDurations() {
+    const menu = menuSelect.value;
+    durationSelect.innerHTML = "";
+
+    if (menu === "training") {
+        durationSelect.add(new Option("60分", "60"));
+    }
+
+    if (menu === "massage") {
+        durationSelect.add(new Option("60分", "60"));
+        durationSelect.add(new Option("90分", "90"));
+        durationSelect.add(new Option("120分", "120"));
+    }
+}
+
+menuSelect.addEventListener("change", () => {
+    updateDurations();
+    loadTimes(); // ← 時刻再計算
+});
+
+updateDurations(); // 初期表示
+loadTimes();
 </script>
 
 {% endblock %}
