@@ -198,6 +198,14 @@ def api_time_slots():
     # -----------------------------
     # この日の基準で「予約 duration の連続枠が取れない開始時刻」も無効化
     # -----------------------------
+    # --- 編集対象の元の開始時刻を取得 ---
+    initial_time = None
+    if exclude_id:
+        r = Reservation.query.get(exclude_id)
+        if r:
+            initial_time = r.start_at.strftime("%H:%M")
+
+# --- 連続枠チェック ---
     for ts in time_slots:
         start_dt = datetime.strptime(f"{date_str} {ts}", "%Y-%m-%d %H:%M")
         end_dt = start_dt + timedelta(minutes=duration + 30)
@@ -211,9 +219,11 @@ def api_time_slots():
             cur += timedelta(minutes=10)
 
         if invalid:
-            disabled.add(ts)
+            if ts != initial_time:
+                disabled.add(ts)
 
     return jsonify({
         "time_slots": time_slots,
         "disabled": list(disabled)
     })
+
