@@ -121,6 +121,7 @@ def reserve():
 def api_time_slots():
     date_str = request.args.get("date")
     duration = request.args.get("duration", type=int)
+    exclude_id = request.args.get("exclude_id", type=int)
 
     if not date_str:
         return jsonify({"error": "date required"}), 400
@@ -143,9 +144,16 @@ def api_time_slots():
     # -----------------------------
     # 予約とブロックを取得
     # -----------------------------
-    reservations = Reservation.query.filter(
+    reservations_q = Reservation.query.filter(
         db.func.date(Reservation.start_at) == selected_date
-    ).all()
+    )
+
+    if exclude_id:
+        reservations_q = reservations_q.filter(
+            Reservation.id != exclude_id
+        )
+
+    reservations = reservations_q.all()
 
     blocks = Block.query.filter(
         db.func.date(Block.start_at) == selected_date
@@ -176,15 +184,16 @@ def api_time_slots():
     # -----------------------------
     # 当日なら過ぎた時間も無効
     # -----------------------------
-    now = datetime.now(ZoneInfo("Asia/Tokyo"))
+    now = datetime.now(ZoneInfo("Asia/Tokyo")).replace(tzinfo=None)
+
     if selected_date == now.date():
         for ts in time_slots:
-            # スロットの日時をタイムゾーン付きで作る
-            slot_dt = datetime.strptime(f"{date_str} {ts}", "%Y-%m-%d %H:%M")
-            slot_dt = slot_dt.replace(tzinfo=ZoneInfo("Asia/Tokyo"))
-
+            slot_dt = datetime.strptime(
+                f"{date_str} {ts}", "%Y-%m-%d %H:%M"
+            )
             if slot_dt <= now:
                 disabled.add(ts)
+
 
     # -----------------------------
     # この日の基準で「予約 duration の連続枠が取れない開始時刻」も無効化
