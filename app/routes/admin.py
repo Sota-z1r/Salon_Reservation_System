@@ -25,7 +25,7 @@ def delete_reservation(resv_id):
 # -----------------------------
 # 予約編集（GET:画面表示, POST:更新）
 # -----------------------------
-@admin_bp.route("/edit/<int:resv_id>", methods=["GET", "POST"])
+@admin_bp.route("/edit/<int:resv_id>", methods=["GET", "POST", "HEAD"])
 def edit_reservation(resv_id):
     r = Reservation.query.get_or_404(resv_id)
 
