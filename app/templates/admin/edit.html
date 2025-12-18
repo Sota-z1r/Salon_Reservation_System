@@ -30,8 +30,12 @@
     <div class="mb-3">
         <label class="form-label">メニュー</label>
         <select name="menu" id="menu" class="form-select" required>
-            <option value="training">パーソナルトレーニング</option>
-            <option value="massage">マッサージ</option>
+            <option value="training" {{ 'selected' if r.menu == 'training' else '' }}>
+                パーソナルトレーニング
+            </option>
+            <option value="massage" {{ 'selected' if r.menu == 'massage' else '' }}>
+                マッサージ
+            </option>
         </select>
     </div>
 
@@ -44,22 +48,17 @@
 
     <div class="mb-3">
         <label class="form-label">予約日</label>
-        <input type="date" name="date"
-               value="{{ date }}"
-               class="form-control" required>
+        <input type="date"
+            id="date"
+            name="date"
+            value="{{ r.start_at.strftime('%Y-%m-%d') }}"
+            class="form-control" required>
     </div>
 
     <div class="mb-3">
         <label class="form-label">開始時間（10分単位）</label>
         <select name="time" id="time" class="form-select" required>
-            {% for h in range(9, 22) %}
-                {% for m in [0,10,20,30,40,50] %}
-                <option value="{{ '%02d:%02d' % (h, m) }}">
-                    {{ '%02d:%02d' % (h, m) }}
-                </option>
-                {% endfor %}
-            {% endfor %}
-            <option value="22:00">22:00</option>
+            <!-- JSで生成 -->
         </select>
     </div>
 
