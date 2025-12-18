@@ -56,15 +56,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
         data.time_slots.forEach(t => {
             const opt = new Option(t, t);
-            if (data.disabled.includes(t)) {
+
+            const isDisabled = data.disabled.includes(t);
+            if (isDisabled) {
                 opt.disabled = true;
             }
-            if (t === initialTime) {
+
+            // ★ 修正ポイント
+            if (t === initialTime && !isDisabled) {
                 opt.selected = true;
             }
+
             timeSelect.add(opt);
         });
     }
+
 
     // -----------------------------
     // 初期化（← 編集画面で一番重要）
