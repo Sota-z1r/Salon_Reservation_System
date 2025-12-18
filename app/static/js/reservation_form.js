@@ -7,13 +7,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const dateInput = document.getElementById("date");
     const timeSelect = document.getElementById("time");
 
-    // 編集画面用初期値（新規予約画面では未定義）
     const initialMenu = form.dataset.initialMenu || null;
     const initialDuration = Number(form.dataset.initialDuration || 60);
     const initialTime = form.dataset.initialTime || null;
+    const excludeId = form.dataset.reservationId || null;
 
     /* ------------------------------
-       所要時間切り替え
+       duration 切替
     ------------------------------ */
     function updateDurations(menu) {
         durationSelect.innerHTML = "";
@@ -28,7 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
             durationSelect.add(new Option("120分", "120"));
         }
 
-        // 編集画面：既存 duration を再選択
         [...durationSelect.options].forEach(opt => {
             if (Number(opt.value) === initialDuration) {
                 opt.selected = true;
@@ -37,19 +36,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* ------------------------------
-       time-slot API 呼び出し
+       time-slot API
     ------------------------------ */
     async function loadTimeSlots() {
-        if (!dateInput || !durationSelect || !timeSelect) return;
-
         const date = dateInput.value;
         const duration = durationSelect.value;
 
         if (!date || !duration) return;
 
-        const res = await fetch(
-            `/api/time-slots?date=${date}&duration=${duration}`
-        );
+        let url = `/api/time-slots?date=${date}&duration=${duration}`;
+        if (excludeId) {
+            url += `&exclude_id=${excludeId}`;
+        }
+
+        const res = await fetch(url);
         const data = await res.json();
 
         timeSelect.innerHTML = "";
@@ -59,49 +59,38 @@ document.addEventListener("DOMContentLoaded", () => {
             opt.value = ts;
             opt.textContent = ts;
 
-            if (data.disabled && data.disabled.includes(ts)) {
+            if (data.disabled.includes(ts)) {
                 opt.disabled = true;
             }
 
             timeSelect.appendChild(opt);
         });
 
-        // 編集画面：既存開始時間を復元
+        // 編集画面：既存時間を強制復元
         if (initialTime) {
-            [...timeSelect.options].forEach(opt => {
-                if (opt.value === initialTime) {
-                    opt.selected = true;
-                }
-            });
+            const opt = [...timeSelect.options].find(o => o.value === initialTime);
+            if (opt) {
+                opt.disabled = false;
+                opt.selected = true;
+            }
         }
     }
 
     /* ------------------------------
-       初期化処理
+       初期化
     ------------------------------ */
-    if (menuSelect) {
-        if (initialMenu) {
-            menuSelect.value = initialMenu;
-        }
+    if (menuSelect && initialMenu) {
+        menuSelect.value = initialMenu;
+    }
 
+    updateDurations(menuSelect.value);
+    loadTimeSlots();
+
+    menuSelect.addEventListener("change", () => {
         updateDurations(menuSelect.value);
-
-        menuSelect.addEventListener("change", () => {
-            updateDurations(menuSelect.value);
-            loadTimeSlots();
-        });
-    }
-
-    if (durationSelect) {
-        durationSelect.addEventListener("change", loadTimeSlots);
-    }
-
-    if (dateInput) {
-        dateInput.addEventListener("change", loadTimeSlots);
-    }
-
-    // 編集画面：初回ロード時に time-slot を取得
-    if (initialTime) {
         loadTimeSlots();
-    }
+    });
+
+    durationSelect.addEventListener("change", loadTimeSlots);
+    dateInput.addEventListener("change", loadTimeSlots);
 });

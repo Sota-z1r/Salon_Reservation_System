@@ -8,6 +8,7 @@
 <form method="POST"
       id="reservation-form"
       action="{{ url_for('admin.edit_reservation', resv_id=r.id) }}"
+      data-reservation-id="{{ r.id }}"
       data-initial-menu="{{ r.menu }}"
       data-initial-duration="{{ r.duration }}"
       data-initial-time="{{ r.start_at.strftime('%H:%M') }}">
