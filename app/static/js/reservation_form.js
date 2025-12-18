@@ -1,21 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("reservation-form");
     if (!form) return;
-    console.log("reservationId:", form.dataset.reservationId);
 
     const menuSelect = document.getElementById("menu");
     const durationSelect = document.getElementById("duration");
     const dateInput = document.getElementById("date");
     const timeSelect = document.getElementById("time");
 
-    const initialMenu = form.dataset.initialMenu || null;
     const initialDuration = Number(form.dataset.initialDuration || 60);
     const initialTime = form.dataset.initialTime || null;
     const excludeId = form.dataset.reservationId || null;
 
-    /* ------------------------------
-       duration 切替
-    ------------------------------ */
+    // -----------------------------
+    // メニュー → duration 切替
+    // -----------------------------
     function updateDurations(menu) {
         durationSelect.innerHTML = "";
 
@@ -36,63 +34,55 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    /* ------------------------------
-       time-slot API
-    ------------------------------ */
-    async function loadTimeSlots() {
-        const date = dateInput.value;
-        const duration = durationSelect.value;
+    // -----------------------------
+    // time-slot API 呼び出し
+    // -----------------------------
+    async function fetchTimeSlots() {
+        if (!dateInput.value || !durationSelect.value) return;
 
-        if (!date || !duration) return;
+        const params = new URLSearchParams({
+            date: dateInput.value,
+            duration: durationSelect.value
+        });
 
-        let url = `/api/time-slots?date=${date}&duration=${duration}`;
-        console.log("time-slot url:", url);
         if (excludeId) {
-            url += `&exclude_id=${excludeId}`;
+            params.append("exclude_id", excludeId);
         }
 
-        const res = await fetch(url);
+        const res = await fetch(`/api/time-slots?${params}`);
         const data = await res.json();
 
         timeSelect.innerHTML = "";
 
-        data.time_slots.forEach(ts => {
-            const opt = document.createElement("option");
-            opt.value = ts;
-            opt.textContent = ts;
-
-            if (data.disabled.includes(ts)) {
+        data.time_slots.forEach(t => {
+            const opt = new Option(t, t);
+            if (data.disabled.includes(t)) {
                 opt.disabled = true;
             }
-
-            timeSelect.appendChild(opt);
-        });
-
-        // 編集画面：既存時間を強制復元
-        if (initialTime) {
-            const opt = [...timeSelect.options].find(o => o.value === initialTime);
-            if (opt) {
-                opt.disabled = false;
+            if (t === initialTime) {
                 opt.selected = true;
             }
-        }
+            timeSelect.add(opt);
+        });
     }
 
-    /* ------------------------------
-       初期化
-    ------------------------------ */
-    if (menuSelect && initialMenu) {
-        menuSelect.value = initialMenu;
-    }
-
-    updateDurations(menuSelect.value);
-    loadTimeSlots();
-
-    menuSelect.addEventListener("change", () => {
+    // -----------------------------
+    // 初期化（← 編集画面で一番重要）
+    // -----------------------------
+    if (menuSelect) {
         updateDurations(menuSelect.value);
-        loadTimeSlots();
+    }
+
+    fetchTimeSlots(); // ← これが無かった
+
+    // -----------------------------
+    // イベント
+    // -----------------------------
+    menuSelect?.addEventListener("change", () => {
+        updateDurations(menuSelect.value);
+        fetchTimeSlots();
     });
 
-    durationSelect.addEventListener("change", loadTimeSlots);
-    dateInput.addEventListener("change", loadTimeSlots);
+    durationSelect?.addEventListener("change", fetchTimeSlots);
+    dateInput?.addEventListener("change", fetchTimeSlots);
 });
