@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("reservation-form");
     if (!form) return;
+    console.log("reservationId:", form.dataset.reservationId);
 
     const menuSelect = document.getElementById("menu");
     const durationSelect = document.getElementById("duration");
@@ -45,6 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!date || !duration) return;
 
         let url = `/api/time-slots?date=${date}&duration=${duration}`;
+        console.log("time-slot url:", url);
         if (excludeId) {
             url += `&exclude_id=${excludeId}`;
         }
