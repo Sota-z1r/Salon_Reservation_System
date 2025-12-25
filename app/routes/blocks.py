@@ -30,8 +30,17 @@ def add_block():
     if request.method == "GET":
         return render_template("admin/blocks/add_block.html")
 
-    start_at = datetime.fromisoformat(request.form["start_at"])
-    end_at = datetime.fromisoformat(request.form["end_at"])
+    date = request.form["date"]              # 2025-12-20
+    start_time = request.form["start_time"]  # 13:10
+    end_time = request.form["end_time"]      # 15:00
+
+    start_at = datetime.strptime(
+        f"{date} {start_time}", "%Y-%m-%d %H:%M"
+    )
+    end_at = datetime.strptime(
+        f"{date} {end_time}", "%Y-%m-%d %H:%M"
+    )
+
     reason = request.form.get("reason", "")
 
     b = Block(start_at=start_at, end_at=end_at, reason=reason)
@@ -60,8 +69,17 @@ def edit_block(block_id):
     if request.method == "GET":
         return render_template("admin/blocks/edit_block.html", b=b)
 
-    b.start_at = datetime.fromisoformat(request.form["start_at"])
-    b.end_at = datetime.fromisoformat(request.form["end_at"])
+    date = request.form["date"]
+    start_time = request.form["start_time"]
+    end_time = request.form["end_time"]
+
+    b.start_at = datetime.strptime(
+        f"{date} {start_time}", "%Y-%m-%d %H:%M"
+    )
+    b.end_at = datetime.strptime(
+        f"{date} {end_time}", "%Y-%m-%d %H:%M"
+    )
+
     b.reason = request.form["reason"]
 
     db.session.commit()

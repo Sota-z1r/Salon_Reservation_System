@@ -5,26 +5,56 @@
 
 <div class="card p-4 shadow-sm">
 
-    <form method="POST">
+    <form method="POST" id="block-form">
 
         <div class="mb-3">
-            <label class="form-label">開始日時</label>
-            <input type="datetime-local" name="start_at" class="form-control" step="600" required>
+            <label class="form-label">日付</label>
+            <input type="date"
+                   name="date"
+                   id="date"
+                   class="form-control"
+                   required>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">終了日時</label>
-            <input type="datetime-local" name="end_at" class="form-control" step="600" required>
+            <label class="form-label">開始時間（10分刻み）</label>
+            <select name="start_time"
+                    id="start_time"
+                    class="form-select"
+                    required>
+                {% for h in range(9, 22) %}
+                    {% for m in [0,10,20,30,40,50] %}
+                        <option value="{{ '%02d:%02d' % (h, m) }}">
+                            {{ '%02d:%02d' % (h, m) }}
+                        </option>
+                    {% endfor %}
+                {% endfor %}
+                <option value="22:00">22:00</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">終了時間（10分刻み）</label>
+            <select name="end_time"
+                    id="end_time"
+                    class="form-select"
+                    required>
+                <!-- JSで制御 -->
+            </select>
         </div>
 
         <div class="mb-3">
             <label class="form-label">理由（任意）</label>
-            <input type="text" name="reason" class="form-control">
+            <input type="text"
+                   name="reason"
+                   class="form-control">
         </div>
 
         <button class="btn btn-primary w-100">登録する</button>
     </form>
 </div>
 
-<a href="{{ url_for('blocks.list_blocks') }}" class="btn btn-secondary mt-3">戻る</a>
+<a href="{{ url_for('blocks.list_blocks') }}"
+   class="btn btn-secondary mt-3">戻る</a>
+
 {% endblock %}
